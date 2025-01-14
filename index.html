@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Advanced Terrain Generator</title>
+    <style>
+      :root {
+        --glass-bg: rgba(28, 32, 38, 0.384);
+        --accent-color: #64ffda;
+        --text-color: #ffffff;
+        --border-radius: 12px;
+        --spacing: 16px;
+      }
+
+      body {
+        margin: 0;
+        overflow: hidden;
+        font-family: "Inter", system-ui, -apple-system, sans-serif;
+        color: var(--text-color);
+      }
+
+      canvas {
+        display: block;
+      }
+
+      #controls {
+        position: absolute;
+        top: var(--spacing);
+        left: var(--spacing);
+        padding: 24px;
+        width: 280px;
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(6px);
+        border-radius: var(--border-radius);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
+        z-index: 10;
+      }
+
+      #controls label {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      #controls input[type="range"] {
+        width: 100%;
+        margin: 8px 0 16px;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        height: 6px;
+      }
+
+      #controls input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 16px;
+        height: 16px;
+        background: var(--accent-color);
+        border-radius: 50%;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+
+      #controls input[type="range"]::-webkit-slider-thumb:hover {
+        transform: scale(1.1);
+      }
+
+      #controls button {
+        width: 100%;
+        padding: 12px;
+        margin: 8px 0;
+        background: rgba(100, 255, 218, 0.1);
+        border: 1px solid var(--accent-color);
+        color: var(--accent-color);
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s;
+      }
+
+      #controls button:hover {
+        background: rgba(100, 255, 218, 0.2);
+        transform: translateY(-1px);
+      }
+
+      #minimap {
+        position: absolute;
+        top: var(--spacing);
+        right: var(--spacing);
+        width: 200px;
+        height: 200px;
+        border-radius: var(--border-radius);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
+      }
+
+      #loading {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px 40px;
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        color: var(--text-color);
+        border-radius: var(--border-radius);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        z-index: 20;
+        display: none;
+        font-weight: 500;
+      }
+
+      /* Value display styling */
+      #controls span {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="controls">
+      <label for="scale">Scale: <span id="scale-value">20</span></label>
+      <input type="range" id="scale" min="1" max="100" value="20" />
+      <label for="height">Height: <span id="height-value">5</span></label>
+      <input type="range" id="height" min="1" max="20" value="5" />
+      <label for="resolution"
+        >Resolution: <span id="resolution-value">100</span></label
+      >
+      <input type="range" id="resolution" min="50" max="500" value="100" />
+      <label for="octaves">Octaves: <span id="octaves-value">4</span></label>
+      <input type="range" id="octaves" min="1" max="8" value="4" />
+      <label for="persistence"
+        >Persistence: <span id="persistence-value">0.5</span></label
+      >
+      <input
+        type="range"
+        id="persistence"
+        min="0.1"
+        max="1"
+        step="0.1"
+        value="0.5"
+      />
+      <label for="lacunarity"
+        >Lacunarity: <span id="lacunarity-value">2</span></label
+      >
+      <input
+        type="range"
+        id="lacunarity"
+        min="1"
+        max="4"
+        step="0.1"
+        value="2"
+      />
+      <label for="water-level"
+        >Water Level: <span id="water-level-value">0</span></label
+      >
+      <input
+        type="range"
+        id="water-level"
+        min="-1"
+        max="1"
+        step="0.1"
+        value="0"
+      />
+      <button id="regenerate">Regenerate</button>
+      <button id="toggle-wireframe">Toggle Wireframe</button>
+    </div>
+    <canvas id="main-canvas"></canvas>
+    <canvas id="minimap"></canvas>
+    <div id="loading">Generating...</div>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./node_modules/three/build/three.module.js",
+          "three/addons/": "./node_modules/three/examples/jsm/"
+        }
+      }
+    </script>
+    <script type="module" src="script.js"></script>
+  </body>
+</html>
