@@ -1,3 +1,13 @@
+## Terrain Generation Example 🌄
+
+Below is an example of the procedurally generated terrain created using Simplex Noise and rendered with Three.js:
+
+![Procedural Terrain Example](assets/terrain-example.png "Procedurally Generated Terrain")
+
+Feel free to explore the code and see how it works!
+
+
+
 
 # Three.js Terrain and Water Simulation
 
